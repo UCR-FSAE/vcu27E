@@ -1,18 +1,25 @@
 #include <Arduino.h>
+#include <FlexCAN_T4.h>
+#include <Watchdog_t4.h>
+#include <ADC.h>
+#include <elapsedMillis.h>
 
-// put function declarations here:
-int myFunction(int, int);
+elapsedMillis tick;
+constexpr uint32_t TICK_DURATION = 10; // 100 hz/10 ms
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+    /*
+    Set up GPIO pins
+    Set up CAN, ADC, WDT
+    */
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+    if (tick >= TICK_DURATION) {
+        tick -= TICK_DURATION;
+        // read inputs
+        // run fsm
+        // send can
+        // feed wdt
+    }
 }
