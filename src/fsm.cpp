@@ -1,4 +1,5 @@
 #include "fsm.h"
+#include "inverter.h"
 
 /*
     NOT_READY,      // Peripherals/Pins init, waiting for RTD Sequence
@@ -36,8 +37,10 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
                 next_state(curSt, NOT_READY);
                 break;
             }
-            // TODO: inverter init sequence
-            next_state(curSt, DRIVE);
+            // Hold disable so the inverter clears its enable lockout, then enable in DRIVE
+            out.torque_cmd = 0;
+            out.inverter_enable = false;
+            if (curSt.state_ticks >= Inverter_INIT_DISABLE_TICKS) { next_state(curSt, DRIVE); }
             break;
         case DRIVE:
             if (!in.ts_active) {
@@ -49,7 +52,8 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
                 break;
             }
 
-            // TODO: enable inverter, calculate torque command
+            out.inverter_enable = true;
+            out.torque_cmd = Inverter_CalcTorqueCommand(in.apps_percentage);
             break;
         case FAULT:
             out.torque_cmd = 0;
