@@ -5,6 +5,7 @@
  *      Author: paul do
  */
 
+#pragma once
 #ifndef INC_INVERTER_H_
 #define INC_INVERTER_H_
 
@@ -12,7 +13,7 @@
 #include "vcu_types.h"
 
 // Inverter functions
-bool Inverter_Process(const Outputs& out);
+bool Inverter_Process(const Outputs &out);
 float Inverter_CalcTorqueCommand(float appsPercentage);
 void Inverter_EnableInverter(void);
 void Inverter_DisableInverter(void);
