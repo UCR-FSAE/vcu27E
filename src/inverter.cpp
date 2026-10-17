@@ -35,7 +35,7 @@ bool Inverter_Process(const Outputs &out)
 {
     /* Clamp so out-of-range or negative values never reach the bus */
     float torque = out.torque_cmd;
-    if (torque < 0.0f)
+    if (torque < 100.0f) // be at 100 for now since breadboard pot value floats
         torque = 0.0f;
     if (torque > MAX_TORQUE_COMMAND)
         torque = MAX_TORQUE_COMMAND;
