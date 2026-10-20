@@ -10,14 +10,14 @@
 #include <Arduino.h>
 
 extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
+volatile InternalState internalState;
 
 /**
  * @brief  Convert accelerator pedal position to an inverter torque command
  * @param  appsPercentage: pedal position (0 - 100)
  * @retval Torque command in inverter units (0 - MAX_TORQUE_COMMAND)
  */
-float Inverter_CalcTorqueCommand(float appsPercentage)
-{
+float Inverter_CalcTorqueCommand(float appsPercentage) {
     if (appsPercentage < 0.0f)
         appsPercentage = 0.0f;
     if (appsPercentage > 100.0f)
@@ -31,8 +31,7 @@ float Inverter_CalcTorqueCommand(float appsPercentage)
  * @param  out: FSM outputs; torque_cmd is in inverter units (0 - MAX_TORQUE_COMMAND)
  * @retval true if the frame was accepted by the CAN controller
  */
-bool Inverter_Process(const Outputs &out)
-{
+bool Inverter_Process(const Outputs &out) {
     /* Clamp so out-of-range or negative values never reach the bus */
     float torque = out.torque_cmd;
     if (torque < 100.0f) // be at 100 for now since breadboard pot value floats
@@ -57,8 +56,7 @@ bool Inverter_Process(const Outputs &out)
  * @param  inverterEnable: Inverter enable state (0=disable, 1=enable)
  * @retval None
  */
-bool Inverter_TransmitCANMessage(uint16_t torque, uint8_t direction, uint8_t inverterEnable)
-{
+bool Inverter_TransmitCANMessage(uint16_t torque, uint8_t direction, uint8_t inverterEnable) {
     CAN_message_t msg;
 
     /* Configure transmission */
@@ -97,8 +95,7 @@ void Inverter_DisableInverter(void) { Inverter_TransmitCANMessage(0, 0, Inverter
  * @brief  Clear active inverter faults (parameter write to fault-clear address)
  * @retval true if the frame was accepted by the CAN controller
  */
-bool Inverter_ClearInverterFaults(void)
-{
+bool Inverter_ClearInverterFaults(void) {
     CAN_message_t msg;
 
     msg.id = Inverter_INVERTER_CLEAR_ID;

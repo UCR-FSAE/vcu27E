@@ -21,6 +21,13 @@ bool Inverter_ClearInverterFaults(void);
 void Inverter_ProcessAnalogInputs(void);
 bool Inverter_TransmitCANMessage(uint16_t torque, uint8_t direction, uint8_t inverterEnable);
 
+struct InternalState {
+    uint32_t inverter_enable = 0x00;
+    bool is_new = false;
+};
+
+extern volatile InternalState internalState;
+
 #define Inverter_INVERTER_COMMAND_ID 0x0C0
 #define Inverter_INVERTER_CLEAR_ID 0x0C1
 #define Inverter_INVERTER_STATUS_ID 0x0AA

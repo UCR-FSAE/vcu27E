@@ -51,6 +51,10 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
                 next_state(curSt, FAULT);
                 break;
             }
+            if (!in.inverter_enabled) {
+                next_state(curSt, FAULT);
+                break;
+            }
 
             out.inverter_enable = true;
             out.torque_cmd = Inverter_CalcTorqueCommand(in.apps_percentage);

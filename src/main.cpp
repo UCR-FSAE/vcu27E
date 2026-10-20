@@ -50,6 +50,14 @@ void print_debug() {
                   (int)out.torque_cmd, out.inverter_enable);
 }
 
+void canRead(const CAN_message_t &msg) {
+    switch (msg.id) {
+        case 0x0AA:
+            internalState.inverter_enable = msg.buf[6];
+            internalState.is_new = true;
+    }
+}
+
 void setup() {
     /*
     TODO:
@@ -72,20 +80,22 @@ void setup() {
     //    can setup
     can1.begin();
     can1.setBaudRate(500000);
+    can1.enableFIFO();
+    can1.enableFIFOInterrupt();
+    can1.setFIFOFilter(REJECT_ALL);
+    can1.setFIFOFilter(0, 0x0AA, STD);
+    can1.onReceive(canRead);
 }
 
 uint16_t potRaw = 0;
 uint32_t blink_timer = 0;
 
 void loop() {
-    uint32_t time_now = millis();
-    if (time_now - blink_timer >= 100) {
-        blink_timer = time_now;
-
+    if (millis() - blink_timer >= 100) {
+        blink_timer = millis();
         digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     }
-    digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(LED_BUILTIN, LOW);
+
     can1.events();
 
     if (tick >= TICK_DURATION) {
@@ -102,6 +112,11 @@ void loop() {
         in.ts_active = true;
         in.driver_act = true;
         in.brake_pressed = true;
+
+        if (internalState.is_new) {
+            in.inverter_enabled = ((internalState.inverter_enable & 0x01) == 0x01);
+            internalState.is_new = false;
+        }
 
         run_fsm(curState, in, out);
         Inverter_Process(out);
