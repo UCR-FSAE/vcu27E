@@ -22,7 +22,7 @@ void Inverter_ProcessAnalogInputs(void);
 bool Inverter_TransmitCANMessage(uint16_t torque, uint8_t direction, uint8_t inverterEnable);
 
 struct InternalState {
-    uint32_t inverter_enable = 0x00;
+    uint32_t byte6 = 0x00;
     bool is_new = false;
 };
 

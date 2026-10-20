@@ -53,7 +53,7 @@ void print_debug() {
 void canRead(const CAN_message_t &msg) {
     switch (msg.id) {
         case 0x0AA:
-            internalState.inverter_enable = msg.buf[6];
+            internalState.byte6 = msg.buf[6];
             internalState.is_new = true;
     }
 }
@@ -114,7 +114,8 @@ void loop() {
         in.brake_pressed = true;
 
         if (internalState.is_new) {
-            in.inverter_enabled = ((internalState.inverter_enable & 0x01) == 0x01);
+            in.inverter_enabled = ((internalState.byte6 & 0x01) == 0x01);
+            in.inverter_locked  = ((internalState.byte6 & 0x80) != 0x00);
             internalState.is_new = false;
         }
 

@@ -40,7 +40,8 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
             // Hold disable so the inverter clears its enable lockout, then enable in DRIVE
             out.torque_cmd = 0;
             out.inverter_enable = false;
-            if (curSt.state_ticks >= Inverter_INIT_DISABLE_TICKS) { next_state(curSt, DRIVE); }
+
+            if (!in.inverter_locked && curSt.state_ticks >= Inverter_INIT_DISABLE_TICKS) { next_state(curSt, DRIVE); }
             break;
         case DRIVE:
             if (!in.ts_active) {
@@ -51,13 +52,15 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
                 next_state(curSt, FAULT);
                 break;
             }
-            if (!in.inverter_enabled) {
-                next_state(curSt, FAULT);
-                break;
-            }
+            // if (!in.inverter_enabled) {
+            //     next_state(curSt, FAULT);
+            //     break;
+            // }
 
             out.inverter_enable = true;
+
             out.torque_cmd = Inverter_CalcTorqueCommand(in.apps_percentage);
+
             break;
         case FAULT:
             out.torque_cmd = 0;
