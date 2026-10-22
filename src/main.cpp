@@ -89,9 +89,13 @@ void setup() {
 
 uint16_t potRaw = 0;
 uint32_t blink_timer = 0;
+uint32_t blink_thres = 10000;
 
 void loop() {
-    if (millis() - blink_timer >= 100) {
+    if (curState.state == INVERTER_INIT) { blink_thres = 1000; }
+    if (curState.state == DRIVE) { blink_thres = 100; }
+
+    if (millis() - blink_timer >= blink_thres) {
         blink_timer = millis();
         digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     }

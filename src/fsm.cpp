@@ -41,7 +41,8 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
             out.torque_cmd = 0;
             out.inverter_enable = false;
 
-            if (!in.inverter_locked && curSt.state_ticks >= Inverter_INIT_DISABLE_TICKS) { next_state(curSt, DRIVE); }
+            if (!in.inverter_locked) { next_state(curSt, DRIVE); }
+            // next_state(curSt, DRIVE);
             break;
         case DRIVE:
             if (!in.ts_active) {

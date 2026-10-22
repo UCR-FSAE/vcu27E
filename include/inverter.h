@@ -37,7 +37,7 @@ extern volatile InternalState internalState;
 #define Inverter_INVERTER_ENABLE 0x01
 #define Inverter_INVERTER_DISABLE 0x00
 
-#define MAX_TORQUE_COMMAND 4000
+#define MAX_TORQUE_COMMAND 50
 
 // Parameter message (0x0C1): fault clear
 #define Inverter_PARAM_FAULT_CLEAR_ADDR 20
