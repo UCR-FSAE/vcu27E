@@ -7,7 +7,7 @@
 #include "fsm.h"
 
 // ------------- Pinouts -------------
-// GPIO OUT
+// GPIO OU
 constexpr uint8_t BUZZER_PIN        = 14;
 constexpr uint8_t BRAKE_LIGHT_PIN   = 15;
 
