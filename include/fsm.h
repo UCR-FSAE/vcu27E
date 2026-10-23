@@ -3,11 +3,11 @@
 #include "vcu_types.h"
 
 enum State { 
-    NOT_READY,      // Peripherals/Pins init, waiting for RTD Sequence
-    RTD,            // Buzzer
-    INVERTER_INIT,  // Inverter init sequence 
-    DRIVE,          // read pedals, send torque cmd, check implausibility
-    FAULT           // Send 0 torque cmd
+    NOT_READY,          // Peripherals/Pins init, waiting for RTD Sequence
+    RTD,                // Buzzer
+    INVERTER_INIT,      // Inverter init sequence 
+    DRIVE,              // read pedals, send torque cmd, check implausibility
+    FAULT               // Send 0 torque cmd
 };
 
 /*
