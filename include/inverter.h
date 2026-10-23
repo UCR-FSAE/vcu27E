@@ -6,10 +6,9 @@
  */
 
 #pragma once
-#ifndef INC_INVERTER_H_
-#define INC_INVERTER_H_
 
 #include <cstdint>
+#include <FlexCAN_T4.h>
 #include "vcu_types.h"
 
 // Inverter functions
@@ -20,6 +19,7 @@ void Inverter_DisableInverter(void);
 bool Inverter_ClearInverterFaults(void);
 void Inverter_ProcessAnalogInputs(void);
 bool Inverter_TransmitCANMessage(uint16_t torque, uint8_t direction, uint8_t inverterEnable);
+void canRead(const CAN_message_t &msg);
 
 struct InternalState {
     uint32_t byte6 = 0x00;
@@ -45,5 +45,3 @@ extern volatile InternalState internalState;
 
 // Init sequence: hold disable this long before enabling (ticks of 10 ms)
 #define Inverter_INIT_DISABLE_TICKS 50
-
-#endif /* INC_INVERTER_H_ */

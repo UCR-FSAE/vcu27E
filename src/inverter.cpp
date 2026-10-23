@@ -38,11 +38,6 @@ bool Inverter_Process(const Outputs &out) {
         torque = 0.0f;
     if (torque > MAX_TORQUE_COMMAND)
         torque = MAX_TORQUE_COMMAND;
-    // if (torque > (MAX_TORQUE_COMMAND + 100)) {
-    //     torque = MAX_TORQUE_COMMAND + 100;
-    // }
-
-    // float torque = 10.0f;
 
     /* Never command torque while disabled */
     if (!out.inverter_enable)
@@ -122,4 +117,12 @@ bool Inverter_ClearInverterFaults(void) {
     msg.buf[7] = 0;
 
     return can1.write(msg) == 1;
+}
+
+void canRead(const CAN_message_t &msg) {
+    switch (msg.id) {
+        case 0x0AA:
+            internalState.byte6 = msg.buf[6];
+            internalState.is_new = true;
+    }
 }

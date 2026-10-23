@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <FlexCAN_T4.h>
 #include <Watchdog_t4.h>
 #include <ADC.h>
 #include <elapsedMillis.h>
@@ -8,8 +7,6 @@
 #include "fsm.h"
 
 // ------------- Pinouts -------------
-constexpr uint8_t POT_PIN = 17;
-
 // GPIO OUT
 constexpr uint8_t BUZZER_PIN = 14;
 constexpr uint8_t BRAKE_LIGHT_PIN = 15;
@@ -38,7 +35,6 @@ Outputs out;
 
 // ------------- Library Setup -------------
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
-ADC *adc = new ADC();
 
 void print_debug() {
     if (debugTimer < DEBUG_PERIOD)
@@ -50,14 +46,6 @@ void print_debug() {
                   (int)out.torque_cmd, out.inverter_enable);
 }
 
-void canRead(const CAN_message_t &msg) {
-    switch (msg.id) {
-        case 0x0AA:
-            internalState.byte6 = msg.buf[6];
-            internalState.is_new = true;
-    }
-}
-
 void setup() {
     /*
     TODO:
@@ -67,13 +55,6 @@ void setup() {
     pinMode(BUZZER_PIN, OUTPUT);
     pinMode(BRAKE_LIGHT_PIN, OUTPUT);
     pinMode(LED_BUILTIN, OUTPUT);
-
-    // ADC setup
-    adc->adc0->setAveraging(16);                                      // average 16 samples
-    adc->adc0->setResolution(12);                                     // 12-bit: 0-4095
-    adc->adc0->setConversionSpeed(ADC_CONVERSION_SPEED::MED_SPEED);
-    adc->adc0->setSamplingSpeed(ADC_SAMPLING_SPEED::MED_SPEED);
-    adc->adc0->startSingleRead(POT_PIN);
 
     Serial.begin(115200);
 
@@ -87,7 +68,6 @@ void setup() {
     can1.onReceive(canRead);
 }
 
-uint16_t potRaw = 0;
 uint32_t blink_timer = 0;
 uint32_t blink_thres = 10000;
 
@@ -104,18 +84,8 @@ void loop() {
 
     if (tick >= TICK_DURATION) {
         tick -= TICK_DURATION;
-        // read_inputs(in);
 
-        if (adc->adc0->isComplete()) {
-            potRaw = adc->adc0->readSingle();
-            adc->adc0->startSingleRead(POT_PIN);
-        }
-        
-        in.apps_percentage = (float)potRaw * 100u / 4095u;
-        // in.apps_percentage = potRaw;
-        in.ts_active = true;
-        in.driver_act = true;
-        in.brake_pressed = true;
+        // read_inputs(in);
 
         if (internalState.is_new) {
             in.inverter_enabled = ((internalState.byte6 & 0x01) == 0x01);
