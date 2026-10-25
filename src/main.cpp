@@ -81,21 +81,15 @@ void loop() {
     }
 
     can1.events();
-
+    
     if (tick >= TICK_DURATION) {
         tick -= TICK_DURATION;
-
+        
+        Inverter_UpdateState();
         // read_inputs(in);
-
-        if (internalState.is_new) {
-            in.inverter_enabled = ((internalState.byte6 & 0x01) == 0x01);
-            in.inverter_locked  = ((internalState.byte6 & 0x80) != 0x00);
-            internalState.is_new = false;
-        }
-
         run_fsm(curState, in, out);
         Inverter_Process(out);
-        print_debug();
+        // print_debug();
 
         // TODO: feed watchdog
     }

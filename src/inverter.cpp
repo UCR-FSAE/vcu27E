@@ -119,10 +119,29 @@ bool Inverter_ClearInverterFaults(void) {
     return can1.write(msg) == 1;
 }
 
+/**
+ * @brief  Update inverter status once new message arrives
+ * @retval None
+ */
+void Inverter_UpdateState() {
+    if (internalState.is_new) {
+        noInterrupts();
+        internalState.inverter_enabled = ((internalState.byte6 & 0x01) == 0x01);
+        internalState.inverter_locked  = ((internalState.byte6 & 0x80) != 0x00);
+        internalState.is_new = false;
+        interrupts();
+    }
+}
+
+/**
+ * @brief  Dump CAN data into internal state struct once a new CAN msg arrives
+ * @retval None
+ */
 void canRead(const CAN_message_t &msg) {
     switch (msg.id) {
         case 0x0AA:
             internalState.byte6 = msg.buf[6];
             internalState.is_new = true;
+            break;
     }
 }

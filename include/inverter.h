@@ -19,10 +19,13 @@ void Inverter_DisableInverter(void);
 bool Inverter_ClearInverterFaults(void);
 void Inverter_ProcessAnalogInputs(void);
 bool Inverter_TransmitCANMessage(uint16_t torque, uint8_t direction, uint8_t inverterEnable);
+void Inverter_UpdateState();
 void canRead(const CAN_message_t &msg);
 
 struct InternalState {
     uint32_t byte6 = 0x00;
+    bool inverter_enabled = false;
+    bool inverter_locked = false;
     bool is_new = false;
 };
 
