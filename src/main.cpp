@@ -14,6 +14,8 @@ constexpr uint8_t BRAKE_LIGHT_PIN = 15;
 constexpr uint8_t TS_ACTIVE_PIN = 3;
 constexpr uint8_t DRIVER_ACT_PIN = 2;
 
+elapsedMillis bse_timer;
+constexpr uint32_t BSE_SAMPLE_PERIOD_MS = 1;
 elapsedMillis tick;
 constexpr uint32_t TICK_DURATION = 10; // 100 Hz / 10 ms
 
@@ -90,10 +92,9 @@ void loop() {
 
     can1.events();
 
-    if (tick >= TICK_DURATION) {
-        tick -= TICK_DURATION;
+    if (bse_timer >= BSE_SAMPLE_PERIOD_MS) {
+        bse_timer = 0;
 
-        // Read the BSE through the sensor module.
         uint16_t bse_raw = 0;
         const bool bse_ok = sensors_read_bse(bse_raw);
 
@@ -102,10 +103,13 @@ void loop() {
             in.bse_raw = static_cast<float>(bse_raw);
         }
 
-        // Preserve the existing BSE validation and processing.
-        bse_update(bseState, bse_raw, bse_ok);
+        bse_update(bseState, bse_raw, bse_ok, millis());
         in.bse_fault = bseState.fault;
         in.brake_pressed = bseState.brake_pressed;
+    }
+
+    if (tick >= TICK_DURATION) {
+        tick -= TICK_DURATION;
 
         if (internalState.is_new) {
             in.inverter_enabled = ((internalState.byte6 & 0x01) == 0x01);
