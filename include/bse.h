@@ -18,9 +18,8 @@ constexpr float   BSE_DIVIDER    = 0.6667f;   // V_pin / V_sensor (resistor divi
 constexpr float   BSE_V_FAULT_LOW  = 0.30f;
 constexpr float   BSE_V_FAULT_HIGH = 4.70f;
 
-// Persistence: 5 ticks x 10 ms tick = 50 ms. Worst-case detection is ~60 ms after the
-// failure, leaving ~40 ms of the 100 ms budget for CAN + inverter reaction.
-constexpr uint8_t BSE_FAULT_TICKS  = 5;
+// Persistence: 10 ticks x 10 ms tick = 100 ms.
+constexpr uint8_t BSE_FAULT_TICKS  = 10;
 
 // Brake-applied threshold with hysteresis
 // Must correspond to HYDRAULIC actuation (T.3.2.4: first 90% of travel may be regen only).
