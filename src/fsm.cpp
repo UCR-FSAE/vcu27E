@@ -29,7 +29,13 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
                 next_state(curSt, NOT_READY); 
                 break;
             }
-            // TODO: turn on buzzer -> if 3 sec pass -> turn off buzzer -> next state
+            
+            // Turn on buzzer -> if 2 sec pass -> turn off buzzer -> next state
+            if (curSt.state_ticks < 2) {
+                out.buzzer = true;
+                break;
+            }
+
             next_state(curSt, INVERTER_INIT);
             break;
         case INVERTER_INIT:

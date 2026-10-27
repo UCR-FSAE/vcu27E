@@ -53,8 +53,10 @@ void setup() {
     Set up CAN, ADC, WDT
     */
     pinMode(BUZZER_PIN, OUTPUT);
+    digitalWrite(BUZZER_PIN, LOW);  // initialize buzzer off
     pinMode(BRAKE_LIGHT_PIN, OUTPUT);
-    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(TS_ACTIVE_PIN, INPUT);
+    pinMode(DRIVER_ACT_PIN, INPUT);
 
     Serial.begin(115200);
 
@@ -70,6 +72,11 @@ void setup() {
 
 uint32_t blink_timer = 0;
 uint32_t blink_thres = 10000;
+
+/* void read_inputs(Inputs& in) {
+    in.ts_active = digitalRead(TS_ACTIVE_PIN) == HIGH;
+    in.driver_act = digitalRead(DRIVER_ACT_PIN) == HIGH;
+} */
 
 void loop() {
     if (curState.state == INVERTER_INIT) { blink_thres = 1000; }
@@ -88,6 +95,12 @@ void loop() {
         Inverter_UpdateState();
         // read_inputs(in);
         run_fsm(curState, in, out);
+        if (out.buzzer) {
+            digitalWrite(BUZZER_PIN, HIGH);
+        }
+        else {
+            digitalWrite(BUZZER_PIN, LOW);
+        }
         Inverter_Process(out);
         // print_debug();
 
