@@ -53,7 +53,6 @@ void setup() {
     Set up CAN, ADC, WDT
     */
     pinMode(BUZZER_PIN, OUTPUT);
-    digitalWrite(BUZZER_PIN, LOW);  // initialize buzzer off
     pinMode(BRAKE_LIGHT_PIN, OUTPUT);
     pinMode(TS_ACTIVE_PIN, INPUT);
     pinMode(DRIVER_ACT_PIN, INPUT);
