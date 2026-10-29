@@ -21,7 +21,7 @@ constexpr uint8_t APPS2_PIN = 40;
 constexpr uint8_t BSE_PIN = 39;
 
 elapsedMillis tick;
-constexpr uint32_t TICK_DURATION = 10; // 100 hz/10 ms
+constexpr uint32_t TICK_DURATION = TICK_MS; // 100 hz/10 ms
 
 // ------------- Debug -------------
 elapsedMillis debugTimer;
@@ -54,8 +54,7 @@ void setup() {
     */
     pinMode(BUZZER_PIN, OUTPUT);
     pinMode(BRAKE_LIGHT_PIN, OUTPUT);
-    pinMode(TS_ACTIVE_PIN, INPUT);
-    pinMode(DRIVER_ACT_PIN, INPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
 
     Serial.begin(115200);
 
@@ -71,11 +70,6 @@ void setup() {
 
 uint32_t blink_timer = 0;
 uint32_t blink_thres = 10000;
-
-/* void read_inputs(Inputs& in) {
-    in.ts_active = digitalRead(TS_ACTIVE_PIN) == HIGH;
-    in.driver_act = digitalRead(DRIVER_ACT_PIN) == HIGH;
-} */
 
 void loop() {
     if (curState.state == INVERTER_INIT) { blink_thres = 1000; }
@@ -94,12 +88,6 @@ void loop() {
         Inverter_UpdateState();
         // read_inputs(in);
         run_fsm(curState, in, out);
-        if (out.buzzer) {
-            digitalWrite(BUZZER_PIN, HIGH);
-        }
-        else {
-            digitalWrite(BUZZER_PIN, LOW);
-        }
         Inverter_Process(out);
         // print_debug();
 
