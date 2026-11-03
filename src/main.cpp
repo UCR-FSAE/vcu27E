@@ -29,6 +29,9 @@ CurrentState    curState;
 Inputs          in;
 Outputs         out;
 
+ADC *adc = new ADC();
+
+
 void setup() {
     /*
     TODO: 
@@ -37,8 +40,22 @@ void setup() {
     */
    pinMode(BUZZER_PIN, OUTPUT);
    pinMode(BRAKE_LIGHT_PIN, OUTPUT);
+   pinMode(TS_ACTIVE_PIN, OUTPUT);
+   pinMode(DRIVER_ACT_PIN, OUTPUT);
+   pinMode(BUZZER_PIN, OUTPUT);
+   pinMode(BRAKE_LIGHT_PIN, OUTPUT);
    pinMode(TS_ACTIVE_PIN, INPUT);
    pinMode(DRIVER_ACT_PIN, INPUT);
+
+   // setting up ADC
+   adc->adc0->setResolution(12);
+   adc->adc0->setAveraging(4);
+   adc->adc0->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED);
+   adc->adc0->setSamplingSpeed(ADC_SAMPLING_SPEED::VERY_LOW_SPEED);
+   adc->adc1->setResolution(12);
+   adc->adc1->setAveraging(4);
+   adc->adc1->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED);
+   adc->adc1->setSamplingSpeed(ADC_SAMPLING_SPEED::VERY_LOW_SPEED);
 }
 
 void loop() {
@@ -50,6 +67,9 @@ void loop() {
             process apps into apps_percentage
             toggle brake_pressed if bse_raw above threshold
         */
+        in.apps1_raw = adc->adc0->analogRead(APPS1_PIN);
+        in.apps2_raw = adc->adc1->analogRead(APPS2_PIN);
+        in.bse_raw = adc->adc1->analogRead(BSE_PIN);
         run_fsm(curState, in, out);
         // TODO: send torque commands over CAN
         // TODO: feed watchdog
