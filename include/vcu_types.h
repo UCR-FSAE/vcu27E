@@ -12,7 +12,6 @@ struct Inputs {
     bool  inverter_locked = true;
     bool  brake_pressed = false;
     bool  pedal_fault = false;
-    bool  bse_fault = false; //BSE failre from bse_update
 };
 
 struct Outputs {
