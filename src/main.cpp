@@ -15,7 +15,6 @@ constexpr uint8_t TS_ACTIVE_PIN = 3;
 constexpr uint8_t DRIVER_ACT_PIN = 2;
 
 elapsedMillis bse_timer;
-constexpr uint32_t BSE_SAMPLE_PERIOD_MS = 1;
 elapsedMillis tick;
 constexpr uint32_t TICK_DURATION = 10; // 100 Hz / 10 ms
 
@@ -53,8 +52,7 @@ void print_debug() {
         (int)out.torque_cmd,
         out.inverter_enable,
         bse_sensor_volts(last_bse_raw),
-        in.brake_pressed,
-        in.bse_fault
+        in.brake_pressed
     );
 }
 
@@ -92,21 +90,17 @@ void loop() {
 
     can1.events();
 
-    if (bse_timer >= BSE_SAMPLE_PERIOD_MS) {
-        bse_timer = 0;
+    // BSE readings
+    uint16_t bse_raw = 0;
+    const bool bse_ok = sensors_read_bse(bse_raw);
 
-        uint16_t bse_raw = 0;
-        const bool bse_ok = sensors_read_bse(bse_raw);
-
-        if (bse_ok) {
-            last_bse_raw = bse_raw;
-            in.bse_raw = static_cast<float>(bse_raw);
-        }
-
-        bse_update(bseState, bse_raw, bse_ok, millis());
-        in.bse_fault = bseState.fault;
-        in.brake_pressed = bseState.brake_pressed;
+    if (bse_ok) {
+        last_bse_raw = bse_raw;
+        in.bse_raw = static_cast<float>(bse_raw);
     }
+
+    bse_update(bseState, bse_raw, bse_ok, millis());
+    in.brake_pressed = bseState.brake_pressed;
 
     if (tick >= TICK_DURATION) {
         tick -= TICK_DURATION;
