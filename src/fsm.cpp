@@ -19,11 +19,9 @@ void next_state(CurrentState& curSt, State s) {
 
 void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
         out = {};
-    if (in.bse_fault && curSt.state != NOT_READY && curSt.state != FAULT) {
-        next_state(curSt, FAULT);
-    }
     switch (curSt.state) {
         case NOT_READY:
+            // Allows the RTD sequences if oressed
             if (in.ts_active && in.driver_act && in.brake_pressed) { next_state(curSt, RTD); }
             break;
         case RTD:
@@ -77,6 +75,6 @@ void run_fsm(CurrentState& curSt, const Inputs& in, Outputs& out) {
             out.inverter_enable = false;
             break; 
     }
-    out.brake_light = in.brake_pressed || in.bse_fault;
+    out.brake_light = in.brake_pressed;
     if (curSt.state_ticks < UINT16_MAX) { curSt.state_ticks++; }
 }
