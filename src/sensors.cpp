@@ -6,9 +6,6 @@
 // BSE ADC input
 constexpr uint8_t BSE_PIN = 39;
 
-// Maximum time to wait for one ADC conversion, in microseconds.
-constexpr uint32_t ADC_TIMEOUT_US = 300;
-
 static ADC* adc = new ADC();
 
 void sensors_init() {
@@ -25,12 +22,8 @@ bool sensors_read_bse(uint16_t& raw) {
         return false;
     }
 
-    const uint32_t t0 = micros();
-
-    while (!adc->adc1->isComplete()) {
-        if (micros() - t0 > ADC_TIMEOUT_US) {
-            return false;
-        }
+    if (!adc->adc1->isComplete()) {
+        return false;
     }
 
     const int value = adc->adc1->readSingle();
