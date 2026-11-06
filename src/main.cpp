@@ -35,6 +35,7 @@ Outputs out;
 
 // ------------- Library Setup -------------
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
+WDT_T4<WDT1> wdt;
 
 void print_debug() {
     if (debugTimer < DEBUG_PERIOD)
@@ -55,7 +56,7 @@ void setup() {
     pinMode(BUZZER_PIN, OUTPUT);
     pinMode(BRAKE_LIGHT_PIN, OUTPUT);
     pinMode(LED_BUILTIN, OUTPUT);
-
+    
     Serial.begin(115200);
 
     //    can setup
@@ -66,10 +67,15 @@ void setup() {
     can1.setFIFOFilter(REJECT_ALL);
     can1.setFIFOFilter(0, 0x0AA, STD);
     can1.onReceive(canRead);
+
+    WDT_timings_t config;
+    config.timeout = 2; // timeout in 2 seconds
+    // config.trigger = 1; // can trigger a certain function before shutdown (like pulling pin low or smth)
+    wdt.begin(config);
 }
 
 uint32_t blink_timer = 0;
-uint32_t blink_thres = 10000;
+uint32_t blink_thres = 100;
 
 void loop() {
     if (curState.state == INVERTER_INIT) { blink_thres = 1000; }
@@ -90,7 +96,7 @@ void loop() {
         run_fsm(curState, in, out);
         Inverter_Process(out);
         // print_debug();
-
-        // TODO: feed watchdog
     }
+
+    wdt.feed();
 }
