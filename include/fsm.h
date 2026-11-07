@@ -10,6 +10,10 @@ enum State {
     FAULT               // Send 0 torque cmd
 };
 
+constexpr uint16_t TICK_MS = 10;
+constexpr uint16_t BUZZER_MS = 2000;
+constexpr uint16_t BUZZER_TICKS = BUZZER_MS / TICK_MS;
+
 /*
     Struct to track state of vcu
     state_ticks: gets incremented every 10ms, 

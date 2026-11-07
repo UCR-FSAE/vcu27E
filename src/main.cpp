@@ -21,7 +21,7 @@ constexpr uint8_t APPS2_PIN = 40;
 constexpr uint8_t BSE_PIN = 39;
 
 elapsedMillis tick;
-constexpr uint32_t TICK_DURATION = 10; // 100 hz/10 ms
+constexpr uint32_t TICK_DURATION = TICK_MS; // 100 hz/10 ms
 
 // ------------- Debug -------------
 elapsedMillis debugTimer;
