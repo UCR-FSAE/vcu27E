@@ -53,8 +53,11 @@ void setup() {
     Set up CAN, ADC, WDT
     */
     pinMode(BUZZER_PIN, OUTPUT);
+    digitalWrite(BUZZER_PIN, LOW);
     pinMode(BRAKE_LIGHT_PIN, OUTPUT);
     pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(TS_ACTIVE_PIN, INPUT_PULLDOWN);
+    pinMode(DRIVER_ACT_PIN, INPUT_PULLDOWN); 
 
     Serial.begin(115200);
 
@@ -66,6 +69,14 @@ void setup() {
     can1.setFIFOFilter(REJECT_ALL);
     can1.setFIFOFilter(0, 0x0AA, STD);
     can1.onReceive(canRead);
+
+    tick = 0;
+}
+
+void read_inputs(Inputs& in) {
+    in.ts_active = digitalRead(TS_ACTIVE_PIN) == HIGH;
+    in.driver_act = digitalRead(DRIVER_ACT_PIN) == HIGH;
+    in.brake_pressed = true;
 }
 
 uint32_t blink_timer = 0;
@@ -86,8 +97,14 @@ void loop() {
         tick -= TICK_DURATION;
         
         Inverter_UpdateState();
-        // read_inputs(in);
+        read_inputs(in);
         run_fsm(curState, in, out);
+        if (out.buzzer) {
+            digitalWrite(BUZZER_PIN, HIGH);
+        } 
+        else {
+            digitalWrite(BUZZER_PIN, LOW);
+        }
         Inverter_Process(out);
         // print_debug();
 
