@@ -37,6 +37,7 @@ Outputs out;
 BseState bseState;
 
 static uint16_t last_bse_raw = 0;
+static uint16_t bse_raw = 0;
 
 // ------------- Library Setup -------------
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
@@ -91,7 +92,6 @@ void loop() {
     can1.events();
 
     // BSE readings
-    uint16_t bse_raw = 0;
     const bool bse_ok = sensors_read_bse(bse_raw);
 
     if (bse_ok) {
