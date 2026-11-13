@@ -12,7 +12,10 @@ void bse_update(BseState& s, uint16_t raw, bool sample_ok, uint32_t now_ms) {
 
     const float v = bse_sensor_volts(raw);
 
-    if (v > BRAKES_ACTIVATION_THRESHOLD) {
+    if (v >= BRAKES_ACTIVATION_THRESHOLD) {
         s.brake_pressed = true;
+    }
+    else {
+        s.brake_pressed = false;
     }
 }
