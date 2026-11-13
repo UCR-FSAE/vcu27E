@@ -47,13 +47,14 @@ void print_debug() {
         return;
     debugTimer = 0;
 
-    Serial.printf("%-13s t=%-5u tq=%4d en=%d bse=%.2fV brk=%d bse_fault=%d\n",
+    Serial.printf("%-13s t=%-5u tq=%4d en=%d bse=%.2fV brk=%d light=%d\n",
         STATE_NAMES[curState.state],
         curState.state_ticks,
         (int)out.torque_cmd,
         out.inverter_enable,
         bse_sensor_volts(last_bse_raw),
-        in.brake_pressed
+        in.brake_pressed,
+        out.brake_light
     );
 }
 
