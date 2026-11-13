@@ -3,22 +3,8 @@
 #include <ADC.h>
 #include <elapsedMillis.h>
 #include "inverter.h"
-
+#include "util.h"
 #include "fsm.h"
-
-// ------------- Pinouts -------------
-// GPIO OUT
-constexpr uint8_t BUZZER_PIN = 14;
-constexpr uint8_t BRAKE_LIGHT_PIN = 15;
-
-// GPIO IN
-constexpr uint8_t TS_ACTIVE_PIN = 3;
-constexpr uint8_t DRIVER_ACT_PIN = 2;
-
-// ADC IN
-constexpr uint8_t APPS1_PIN = 41;
-constexpr uint8_t APPS2_PIN = 40;
-constexpr uint8_t BSE_PIN = 39;
 
 elapsedMillis tick;
 constexpr uint32_t TICK_DURATION = TICK_MS; // 100 hz/10 ms
@@ -47,17 +33,7 @@ void print_debug() {
 }
 
 void setup() {
-    /*
-    TODO:
-    Set up GPIO pins
-    Set up CAN, ADC, WDT
-    */
-    pinMode(BUZZER_PIN, OUTPUT);
-    digitalWrite(BUZZER_PIN, LOW);
-    pinMode(BRAKE_LIGHT_PIN, OUTPUT);
-    pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(TS_ACTIVE_PIN, INPUT_PULLDOWN);
-    pinMode(DRIVER_ACT_PIN, INPUT_PULLDOWN); 
+    setup_gpio();
 
     Serial.begin(115200);
 
@@ -71,12 +47,6 @@ void setup() {
     can1.onReceive(canRead);
 
     tick = 0;
-}
-
-void read_inputs(Inputs& in) {
-    in.ts_active = digitalRead(TS_ACTIVE_PIN) == HIGH;
-    in.driver_act = digitalRead(DRIVER_ACT_PIN) == HIGH;
-    in.brake_pressed = true;
 }
 
 uint32_t blink_timer = 0;
@@ -99,13 +69,8 @@ void loop() {
         Inverter_UpdateState();
         read_inputs(in);
         run_fsm(curState, in, out);
-        if (out.buzzer) {
-            digitalWrite(BUZZER_PIN, HIGH);
-        } 
-        else {
-            digitalWrite(BUZZER_PIN, LOW);
-        }
         Inverter_Process(out);
+        process_gpio(out);
         // print_debug();
 
         // TODO: feed watchdog
