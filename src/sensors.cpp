@@ -18,16 +18,25 @@ void sensors_init() {
 }
 
 bool sensors_read_bse(uint16_t& raw) {
-    if (!adc->adc1->startSingleRead(BSE_PIN)) {
+
+    static bool conversion_started = false;
+
+    // Should start a conversion if it hasn't alreadu 
+    if (conversion_started == true) {
+        if (!adc->adc1->startSingleRead(BSE_PIN)) {
+            return false;
+        }
+        conversion_started = true;
         return false;
     }
-
+    // check if the it is complete
     if (!adc->adc1->isComplete()) {
         return false;
     }
 
     const int value = adc->adc1->readSingle();
-
+    conversion_started = false;
+    
     if (value == ADC_ERROR_VALUE) {
         return false;
     }
