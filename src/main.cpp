@@ -94,12 +94,13 @@ void loop() {
     // BSE readings
     const bool bse_ok = sensors_read_bse(bse_raw);
 
+    // Only calls the bse_update when a new ADC reading is avalilable
     if (bse_ok) {
         last_bse_raw = bse_raw;
         in.bse_raw = static_cast<float>(bse_raw);
+        bse_update(bseState, bse_raw, bse_ok, millis());
     }
-
-    bse_update(bseState, bse_raw, bse_ok, millis());
+    
     in.brake_pressed = bseState.brake_pressed;
 
     if (tick >= TICK_DURATION) {
