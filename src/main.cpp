@@ -78,10 +78,6 @@ void setup() {
 
    pinMode(BUZZER_PIN, OUTPUT);
    pinMode(BRAKE_LIGHT_PIN, OUTPUT);
-   pinMode(TS_ACTIVE_PIN, OUTPUT);
-   pinMode(DRIVER_ACT_PIN, OUTPUT);
-   pinMode(BUZZER_PIN, OUTPUT);
-   pinMode(BRAKE_LIGHT_PIN, OUTPUT);
    pinMode(TS_ACTIVE_PIN, INPUT);
    pinMode(DRIVER_ACT_PIN, INPUT);
 
