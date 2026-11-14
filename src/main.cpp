@@ -60,13 +60,19 @@ float calcAppsPercentage(float apps1Raw, float apps2Raw) {
     return (apps1Percent + apps2Percent) / 2;
 }
 
+void canRead(const CAN_message_t &msg) {
+    switch(msg.id) {
+        case 0x0AA:
+            in.inverter_enabled = (msg.buf[6] & 0x01) != 0;
+            break;
+    }
+}
+
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
 WDT_T4<WDT3> wdt;
 
-constexpr uint32_t WDT_TIMEOUT_MS = 100;
-constexpr float APPS1_RAW_REST = 500; 
+constexpr uint32_t WDT_TIMEOUT_MS = 100; 
 constexpr float BSE_THRESHOLD = 1000;
-constexpr float APPS1_RAW_FULL = 3500;
 
 void setup() {
 
@@ -96,7 +102,7 @@ void setup() {
    can1.enableFIFOInterrupt();
    can1.setFIFOFilter(REJECT_ALL);
    can1.setFIFOFilter(0, 0x0AA, STD);
-   // not sure what to write here "can1.onReceive();""
+   can1.onReceive(canRead);
 
    //setting up watchdog
     WDT_timings_t wdt_config;
@@ -121,6 +127,10 @@ void loop() {
         } else {
             in.brake_pressed = false;
         }
+
+        in.ts_active = (digitalRead(TS_ACTIVE_PIN) == HIGH);
+        in.driver_act = (digitalRead(DRIVER_ACT_PIN) == HIGH);
+
         run_fsm(curState, in, out);
         wdt.feed();
     }
