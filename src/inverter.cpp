@@ -11,6 +11,7 @@
 #include <math.h>
 
 extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
+volatile InternalState internalState;
 
 /**
  * @brief  Convert accelerator pedal position to an inverter torque command
@@ -52,10 +53,15 @@ bool Inverter_Process(const Outputs &out)
 {
     /* Clamp so out-of-range or negative values never reach the bus */
     float torque = out.torque_cmd;
-    if (torque < 0.0f)
+    if (torque < 5.0f) // be at 100 for now since breadboard pot value floats
         torque = 0.0f;
     if (torque > MAX_TORQUE_COMMAND)
         torque = MAX_TORQUE_COMMAND;
+    // if (torque > (MAX_TORQUE_COMMAND + 100)) {
+    //     torque = MAX_TORQUE_COMMAND + 100;
+    // }
+
+    // float torque = 10.0f;
 
     /* Never command torque while disabled */
     if (!out.inverter_enable)
