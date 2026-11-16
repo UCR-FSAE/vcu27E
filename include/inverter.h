@@ -30,7 +30,10 @@ bool Inverter_TransmitCANMessage(uint16_t torque, uint8_t direction, uint8_t inv
 #define Inverter_INVERTER_ENABLE 0x01
 #define Inverter_INVERTER_DISABLE 0x00
 
-#define MAX_TORQUE_COMMAND 1000
+#define MAX_TORQUE_COMMAND 4000
+
+// Pedal-to-torque curve shape: 0 = linear, higher = softer start / steeper end
+#define TORQUE_CURVE_K 1.2f
 
 // Parameter message (0x0C1): fault clear
 #define Inverter_PARAM_FAULT_CLEAR_ADDR 20

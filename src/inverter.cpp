@@ -8,6 +8,7 @@
 #include "inverter.h"
 #include <FlexCAN_T4.h>
 #include <Arduino.h>
+#include <math.h>
 
 extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
 
@@ -18,12 +19,28 @@ extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
  */
 float Inverter_CalcTorqueCommand(float appsPercentage)
 {
+    /* 1. Clamp input to 0 - 100 */
     if (appsPercentage < 0.0f)
         appsPercentage = 0.0f;
     if (appsPercentage > 100.0f)
         appsPercentage = 100.0f;
 
-    return (appsPercentage / 100.0f) * MAX_TORQUE_COMMAND;
+    /* 2. Fraction of pedal travel (0.0 - 1.0) */
+    const float pedalFraction = appsPercentage / 100.0f;
+
+    /* 3. Apply exponential curve: (e^(k*x) - 1) / (e^k - 1) */
+    float torqueFraction;
+    if (fabsf(TORQUE_CURVE_K) < 1e-6f)
+    {
+        torqueFraction = pedalFraction; /* linear fallback */
+    }
+    else
+    {
+        torqueFraction = expm1f(TORQUE_CURVE_K * pedalFraction) / expm1f(TORQUE_CURVE_K);
+    }
+
+    /* 4. Scale to inverter units (0 - MAX_TORQUE_COMMAND) */
+    return torqueFraction * MAX_TORQUE_COMMAND;
 }
 
 /**
